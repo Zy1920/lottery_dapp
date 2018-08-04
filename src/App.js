@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Message,Container,Card,Icon,Image,Button,Statistic} from 'semantic-ui-react';
+import {Message,Container,Card,Icon,Image,Button,Statistic,Label} from 'semantic-ui-react';
 import web3 from './web3';
 import lottery from './lottery';
 
@@ -10,7 +10,10 @@ class App extends Component {
         playersCount:0,
         balance:0,
         loading:false,
-        showbutton:'none'
+        showbutton:'none',
+        ploading:false,
+        rloading:false
+
     }
 
     enter = async ()=>{
@@ -20,7 +23,7 @@ class App extends Component {
         //拿着彩票智能合约调用enter方法
         await lottery.methods.enter().send({
             from:accounts[0],
-            value:'1000000000000000000'
+            value:'3000000'
         });
         this.setState({loading:false});
         window.location.reload(true);
@@ -28,17 +31,27 @@ class App extends Component {
 
 
     pickWinner = async ()=>{
-        this.setState({loading:true});
+        this.setState({ploading:true});
         //获取账户
         const accounts = await web3.eth.getAccounts();
         //拿着彩票智能合约调用pickWinner方法
         await  lottery.methods.pickWinner().send({
             from: accounts[0]
         });
-        this.setState({loading:false});
+        this.setState({ploading:false});
         window.location.reload(true);
     };
 
+    refund=async()=>{
+        this.setState({rloading:true});
+        const accounts=await web3.eth.getAccounts();
+        await lottery.methods.refund().send({
+            from:accounts[0]
+        });
+        this.setStatr({rloading:false});
+        window.location.reload(true);
+
+    }
 
     async componentDidMount(){
         const address=await lottery.methods.getManager().call();
@@ -61,7 +74,6 @@ class App extends Component {
 
     }
 
-
     render() {
         return (
             <Container>
@@ -76,7 +88,9 @@ class App extends Component {
                         <Card.Header>六合彩</Card.Header>
                         <Card.Meta>
                             <p>管理员地址</p>
-                            <span className='date'>{this.state.manager}</span>
+                            <Label size='mini'>
+                                {this.state.manager}
+                            </Label>
                         </Card.Meta>
                         <Card.Description>每周三晚上8点准时开奖</Card.Description>
                     </Card.Content>
@@ -97,8 +111,8 @@ class App extends Component {
                         <Button.Content hidden>购买放飞梦想</Button.Content>
                     </Button>
                     <Button color='yellow' style={{display: this.state.showbutton}}
-                            onClick={this.pickWinner}>开奖</Button>
-                    <Button color='red' style={{display: this.state.showbutton}}>退钱</Button>
+                            onClick={this.pickWinner} ploading={this.state.ploading}>开奖</Button>
+                    <Button color='red' style={{display: this.state.showbutton}} onClick={this.refund} reloading={this.state.rloading}>退钱</Button>
                 </Card>
             </Container>
         );

@@ -1,6 +1,6 @@
 import web3 from './web3'; //装好了 用户provider的web3
 //0x510776D2E0c193840cabAE08e099Db07F04d2E27
-const address = '0x510776D2E0c193840cabAE08e099Db07F04d2E27';
+const address = '0x049DCcC0234Dc214f4522130dED71FBdadbF114f';
 
 const abi = [{
     "constant": true,
